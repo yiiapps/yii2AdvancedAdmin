@@ -4,77 +4,91 @@
 /* @var $content string */
 
 use backend\assets\AppAsset;
-use yii\helpers\Html;
+use common\widgets\Alert;
+use mdm\admin\components\MenuHelper;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
+use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
-use common\widgets\Alert;
 
 AppAsset::register($this);
+
 ?>
-<?php $this->beginPage() ?>
+<?php $this->beginPage();?>
 <!DOCTYPE html>
-<html lang="<?= Yii::$app->language ?>">
+<html lang="<?=Yii::$app->language;?>">
 <head>
-    <meta charset="<?= Yii::$app->charset ?>">
+    <meta charset="<?=Yii::$app->charset;?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?= Html::csrfMetaTags() ?>
-    <title><?= Html::encode($this->title) ?></title>
-    <?php $this->head() ?>
+    <?=Html::csrfMetaTags();?>
+    <title><?=Html::encode($this->title);?></title>
+    <?php $this->head();?>
+    <style type="text/css">
+        .ui-autocomplete {
+        top: 100px;
+    }
+</style>
 </head>
 <body>
-<?php $this->beginBody() ?>
+<?php $this->beginBody();?>
 
 <div class="wrap">
     <?php
-    NavBar::begin([
-        'brandLabel' => Yii::$app->name,
-        'brandUrl' => Yii::$app->homeUrl,
-        'options' => [
-            'class' => 'navbar-inverse navbar-fixed-top',
-        ],
-    ]);
-    $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
-    ];
-    if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
-    } else {
-        $menuItems[] = '<li>'
-            . Html::beginForm(['/site/logout'], 'post')
+NavBar::begin([
+    'brandLabel' => Yii::$app->name,
+    'brandUrl' => Yii::$app->homeUrl,
+    'options' => [
+        'class' => 'navbar-inverse navbar-fixed-top',
+    ],
+]);
+echo Nav::widget([
+    'options' => ['class' => 'navbar-nav navbar-right'],
+    'items' => [
+        ['label' => '后台首页', 'url' => ['/admin/']],
+        // ['label' => 'About', 'url' => ['/site/about']],
+        // ['label' => 'Contact', 'url' => ['/site/contact']],
+        Yii::$app->user->isGuest ? (
+            // ['label' => 'Login', 'url' => ['/site/login']]
+            ['label' => 'Login', 'url' => ['/admin/user/login']]
+        ) : (
+            '<li>'
+            . Html::beginForm(['/admin/user/logout'], 'post')
             . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
+                '退出 (' . Yii::$app->user->identity->username . ')',
                 ['class' => 'btn btn-link logout']
             )
             . Html::endForm()
-            . '</li>';
-    }
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => $menuItems,
-    ]);
-    NavBar::end();
-    ?>
+            . '</li>'
+        ),
+    ],
+]);
+// var_dump(MenuHelper::getAssignedMenu(Yii::$app->user->id));exit;
+echo Nav::widget([
+    'options' => ['class' => 'navbar-nav navbar-left'],
+    'items' => MenuHelper::getAssignedMenu(Yii::$app->user->id),
+]);
+NavBar::end();
+?>
 
     <div class="container">
-        <?= Breadcrumbs::widget([
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-        ]) ?>
-        <?= Alert::widget() ?>
-        <?= $content ?>
+        <?=Breadcrumbs::widget([
+    'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+]);?>
+        <?=Alert::widget();?>
+        <?=$content;?>
     </div>
 </div>
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?></p>
+        <p class="pull-left">&copy; My Company <?=date('Y');?></p>
 
-        <p class="pull-right"><?= Yii::powered() ?></p>
+        <p class="pull-right"><?=Yii::powered();?></p>
     </div>
 </footer>
 
-<?php $this->endBody() ?>
+<?php $this->endBody();?>
 </body>
 </html>
-<?php $this->endPage() ?>
+<?php $this->endPage();?>
